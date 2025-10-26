@@ -76,7 +76,7 @@ const App: React.FC = () => {
                 }
             } catch (err) {
                 console.error("Firebase fetch error:", err);
-                setError("Could not connect to the database. Please check your Firebase setup and Firestore security rules.");
+                setError("Could not connect to the database. Common issues: 1) If deployed, add your site's domain (e.g., username.github.io) to Firebase Authentication's 'Authorized domains'. 2) Check your Firestore security rules to allow reads on the 'equipment' collection.");
             } finally {
                 setIsLoading(false);
                 setTimeout(() => setIsGridVisible(true), 100);
