@@ -1,5 +1,5 @@
 {
   "name": "Muscle Omania",
-  "description": "A comprehensive gym application with a fun, cartoony theme that provides detailed information on equipment, proper techniques, and target muscles using Gemini. It includes a workout logger with options for unilateral exercises.",
+  "description": "A comprehensive gym application with a fun, cartoony theme that provides detailed information on equipment and includes a workout logger with options for unilateral exercises.",
   "requestFramePermissions": []
 }

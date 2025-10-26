@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import type { User } from 'firebase/auth';
 import Header from './components/Header';
@@ -10,11 +11,12 @@ import WorkoutHistoryModal from './components/WorkoutHistoryModal';
 import SkeletonCard from './components/SkeletonCard';
 import AddEquipmentModal from './components/AddEquipmentModal';
 import type { Equipment, WorkoutSession } from './types';
+import { firebaseConfig } from './firebaseConfig';
 import { 
     onAuthStateChangedListener, 
     logoutUser, 
     getEquipmentList,
-    updateEquipment as updateEquipmentInDb,
+    updateEquipmentInDb,
     addEquipment,
     deleteEquipment,
     seedDatabase,
@@ -66,6 +68,11 @@ const App: React.FC = () => {
             setIsGridVisible(false);
             setError(null);
             try {
+                // Check if the config keys are still placeholders before making a request.
+                if (firebaseConfig.apiKey.startsWith("[YOUR_")) {
+                    throw new Error("Configuration Error: Please replace the placeholder values in 'firebaseConfig.ts' with your actual Firebase keys.");
+                }
+
                 const list = await getEquipmentList();
                 if (list.length === 0) {
                     await seedDatabase();
@@ -76,7 +83,11 @@ const App: React.FC = () => {
                 }
             } catch (err) {
                 console.error("Firebase fetch error:", err);
-                setError("Could not connect to the database. Common issues: 1) If deployed, add your site's domain (e.g., username.github.io) to Firebase Authentication's 'Authorized domains'. 2) Check your Firestore security rules to allow reads on the 'equipment' collection.");
+                if (err instanceof Error && err.message.startsWith("Configuration Error:")) {
+                    setError(err.message);
+                } else {
+                    setError("Could not connect to the database. Common issues: 1) If deployed, add your site's domain (e.g., username.github.io) to Firebase Authentication's 'Authorized domains'. 2) Check your Firestore security rules to allow reads on the 'equipment' collection.");
+                }
             } finally {
                 setIsLoading(false);
                 setTimeout(() => setIsGridVisible(true), 100);
@@ -244,7 +255,7 @@ const App: React.FC = () => {
             />
 
             <footer className="text-center py-8 text-gray-500 border-t border-gray-800 mt-16">
-                <p>Powered by Firebase & the Gemini API</p>
+                <p>Powered by Firebase</p>
             </footer>
         </div>
     );

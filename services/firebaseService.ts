@@ -1,3 +1,4 @@
+
 import type { User } from 'firebase/auth';
 import { auth, db } from '../firebaseConfig';
 import { INITIAL_EQUIPMENT } from '../constants';
@@ -67,7 +68,7 @@ export const deleteEquipment = (id: string) => {
     return db.collection(EQUIPMENT_COLLECTION).doc(id).delete();
 };
 
-export const updateEquipment = (id: string, data: Partial<Omit<Equipment, 'id'>>) => {
+export const updateEquipmentInDb = (id: string, data: Partial<Omit<Equipment, 'id'>>) => {
     // FIX: Reverted to Firebase v8 Firestore API.
     const equipmentDocRef = db.collection(EQUIPMENT_COLLECTION).doc(id);
     return equipmentDocRef.update(data);

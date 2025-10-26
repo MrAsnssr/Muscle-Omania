@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import type { Equipment } from '../types';
-import { generateEquipmentInfo } from '../services/geminiService';
-import ImageGenerator from './ImageGenerator';
 
 interface AddEquipmentModalProps {
   isOpen: boolean;
@@ -15,8 +13,6 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, 
   const [imageUrl, setImageUrl] = useState('https://source.unsplash.com/600x400/?gym-equipment-placeholder');
   const [info, setInfo] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
-  const [isGeneratingInfo, setIsGeneratingInfo] = useState(false);
-  const [characterDescription, setCharacterDescription] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -25,7 +21,6 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, 
         setImageUrl('https://source.unsplash.com/600x400/?gym-equipment-placeholder');
         setInfo('');
         setVideoUrl('');
-        setCharacterDescription('');
     }
   }, [isOpen]);
 
@@ -35,17 +30,6 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, 
         return;
     }
     onSave({ name, imageUrl, info, videoUrl });
-  };
-  
-  const handleGenerateInfo = async () => {
-    if (!name.trim()) {
-        alert("Please enter a machine name first.");
-        return;
-    }
-    setIsGeneratingInfo(true);
-    const generatedInfo = await generateEquipmentInfo(name);
-    setInfo(generatedInfo);
-    setIsGeneratingInfo(false);
   };
   
   const inputClasses = "bg-gray-800/50 p-3 rounded-md w-full border border-white/10 focus:border-red-500 focus:ring-red-500 transition-colors";
@@ -67,55 +51,27 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, 
         </div>
         
         <div>
-            <label className={labelClasses}>Image Generation</label>
-            <div className="bg-gray-800/50 p-4 rounded-md border border-white/10 space-y-4">
-                <img src={imageUrl} alt={name || "New Machine"} className="w-full h-48 object-cover rounded-md border border-white/10"/>
-                
-                <div>
-                    <label htmlFor="add-character" className={labelClasses}>Character Template (Describe your character)</label>
-                    <textarea
-                        id="add-character"
-                        value={characterDescription}
-                        onChange={(e) => setCharacterDescription(e.target.value)}
-                        className={inputClasses}
-                        rows={2}
-                        placeholder="e.g., a cartoon muscular bull, a futuristic robot, etc."
-                    />
-                </div>
-
-                <ImageGenerator 
-                    equipmentName={name} 
-                    characterDescription={characterDescription}
-                    onImageGenerated={setImageUrl} 
-                />
-            </div>
+            <label htmlFor="add-imageUrl" className={labelClasses}>Image URL</label>
+             <input
+                id="add-imageUrl"
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className={inputClasses}
+                placeholder="https://source.unsplash.com/..."
+            />
+            <img src={imageUrl} alt={name || "New Machine"} className="w-full h-48 object-cover rounded-md border border-white/10 mt-4"/>
         </div>
 
         <div>
-            <div className="flex justify-between items-center mb-2">
-                <label htmlFor="add-info" className={labelClasses}>Additional Information</label>
-                <button 
-                    onClick={handleGenerateInfo}
-                    disabled={isGeneratingInfo || !name}
-                    className="flex items-center gap-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 text-white py-1 px-3 rounded-full transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
-                >
-                    {isGeneratingInfo ? (
-                        <>
-                           <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                           <span>Generating...</span>
-                        </>
-                    ) : (
-                        "✨ Generate with AI"
-                    )}
-                </button>
-            </div>
+            <label htmlFor="add-info" className={labelClasses}>Additional Information</label>
           <textarea
             id="add-info"
             value={info}
             onChange={(e) => setInfo(e.target.value)}
             className={inputClasses}
             rows={8}
-            placeholder="Add any extra details, setup tips, or variations here, or generate them with AI."
+            placeholder="Add any extra details, setup tips, or variations here."
           />
         </div>
 
