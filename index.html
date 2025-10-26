@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Muscle Omania</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^18.2.0",
+    "react/": "https://aistudiocdn.com/react@^18.2.0/",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^18.2.0/client",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^18.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
+    "firebase/app": "https://aistudiocdn.com/firebase@^12.4.0/app",
+    "firebase/auth": "https://aistudiocdn.com/firebase@^12.4.0/auth",
+    "firebase/firestore": "https://aistudiocdn.com/firebase@^12.4.0/firestore",
+    "firebase/compat/app": "https://aistudiocdn.com/firebase@^12.4.0/compat/app",
+    "firebase/compat/auth": "https://aistudiocdn.com/firebase@^12.4.0/compat/auth",
+    "firebase/compat/firestore": "https://aistudiocdn.com/firebase@^12.4.0/compat/firestore",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.4.0/"
+  }
+}
+</script>
+    <style>
+        body {
+            background-color: #0c0a09; /* stone-950 */
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-text {
+          background: linear-gradient(90deg, #ef4444, #f97316);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .animated-gradient-bg {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(circle at top left, #ef444430, transparent 40%), 
+                        radial-gradient(circle at bottom right, #3b82f630, transparent 40%);
+            animation: moveGradient 20s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+         /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1c1917; /* stone-900 */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-image: linear-gradient(to bottom, #ef4444, #f97316);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+             background-image: linear-gradient(to bottom, #f87171, #fb923c);
+        }
+    </style>
+  </head>
+  <body>
+    <div class="animated-gradient-bg"></div>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
