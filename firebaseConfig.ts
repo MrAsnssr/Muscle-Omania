@@ -1,11 +1,12 @@
-// FIX: Switched to Firebase v9 compatibility layer to match v8 syntax.
+
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+// Fix: Import 'firebase/compat/firestore' to use the compatibility API and resolve export errors.
 import 'firebase/compat/firestore';
 
 
 // =================================================================================
-// 🔥🔥🔥 ACTION REQUIRED 🔥🔥🔥
+// 🔥🔥🔥 YOUR CONFIGURATION 🔥🔥🔥
 // =================================================================================
 //
 // Your Firebase config has been updated with the keys you provided.

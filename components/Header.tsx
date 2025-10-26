@@ -11,7 +11,7 @@ const Header: React.FC<HeaderProps> = ({ isLoggedIn, onLogout, onLoginClick, onH
     return (
         <header className="bg-black/30 backdrop-blur-lg sticky top-0 z-40 w-full border-b border-white/10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-24">
-                <div className="flex items-center space-x-4">
+                <div onClick={() => window.location.hash = '#home'} className="flex items-center space-x-4 cursor-pointer">
                     <img src="https://i.ibb.co/4ZmnSKy2/unnamed-1-removebg-preview.png" alt="Muscle Omania Logo" className="h-20 w-auto"/>
                     <h1 className="text-3xl font-bold text-white tracking-tight hidden sm:block">Muscle Omania</h1>
                 </div>

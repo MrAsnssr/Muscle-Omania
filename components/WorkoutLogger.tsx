@@ -10,6 +10,10 @@ interface WorkoutLoggerProps {
 
 const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ equipment, userId, onSessionSaved }) => {
     const [sets, setSets] = useState<WorkoutSet[]>([]);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState('');
+    
+    // State for strength workouts
     const [isSplit, setIsSplit] = useState(false);
     const [weight, setWeight] = useState('');
     const [reps, setReps] = useState('');
@@ -17,30 +21,42 @@ const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ equipment, userId, onSess
     const [leftReps, setLeftReps] = useState('');
     const [rightWeight, setRightWeight] = useState('');
     const [rightReps, setRightReps] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
-    const [saveMessage, setSaveMessage] = useState('');
-    
+
+    // State for cardio workouts
+    const [duration, setDuration] = useState('');
+    const [distance, setDistance] = useState('');
+
+    const isStrength = equipment.type === 'strength';
+
     const handleAddSet = () => {
-        if (isSplit) {
-            const newSets: WorkoutSet[] = [];
-            if (leftWeight && leftReps) {
-                newSets.push({ id: Date.now() + Math.random(), weight: leftWeight, reps: leftReps, side: 'Left' });
+        if (isStrength) {
+            if (isSplit) {
+                const newSets: WorkoutSet[] = [];
+                if (leftWeight && leftReps) {
+                    newSets.push({ id: Date.now() + Math.random(), weight: leftWeight, reps: leftReps, side: 'Left' });
+                }
+                if (rightWeight && rightReps) {
+                    newSets.push({ id: Date.now() + Math.random(), weight: rightWeight, reps: rightReps, side: 'Right' });
+                }
+                if (newSets.length > 0) {
+                    setSets(prev => [...prev, ...newSets]);
+                }
+                setLeftWeight('');
+                setLeftReps('');
+                setRightWeight('');
+                setRightReps('');
+            } else {
+                if (weight && reps) {
+                    setSets(prev => [...prev, { id: Date.now(), weight, reps }]);
+                    setWeight('');
+                    setReps('');
+                }
             }
-            if (rightWeight && rightReps) {
-                newSets.push({ id: Date.now() + Math.random(), weight: rightWeight, reps: rightReps, side: 'Right' });
-            }
-            if (newSets.length > 0) {
-                setSets(prev => [...prev, ...newSets]);
-            }
-            setLeftWeight('');
-            setLeftReps('');
-            setRightWeight('');
-            setRightReps('');
-        } else {
-            if (weight && reps) {
-                setSets(prev => [...prev, { id: Date.now(), weight, reps }]);
-                setWeight('');
-                setReps('');
+        } else { // Cardio
+            if (duration && distance) {
+                setSets(prev => [...prev, { id: Date.now(), duration, distance }]);
+                setDuration('');
+                setDistance('');
             }
         }
     };
@@ -84,32 +100,42 @@ const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ equipment, userId, onSess
     return (
         <div className="p-4 bg-black/20 rounded-lg border border-white/10">
             <h3 className="text-xl font-bold tracking-tight text-white mb-4">Workout Logger</h3>
-            <div className="flex items-center mb-4">
-                <label className="flex items-center cursor-pointer">
-                    <div className="relative">
-                        <input type="checkbox" checked={isSplit} onChange={() => setIsSplit(!isSplit)} className="sr-only" />
-                        <div className={`block w-14 h-8 rounded-full border-2 transition-colors ${isSplit ? 'bg-gradient-to-r from-red-500 to-orange-500 border-transparent' : 'bg-gray-700 border-gray-600'}`}></div>
-                        <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${isSplit ? 'translate-x-full' : ''}`}></div>
-                    </div>
-                    <div className="ml-3 text-white font-semibold">Unilateral (Left/Right)</div>
-                </label>
-            </div>
             
-            <div className={`grid gap-4 mb-4 ${isSplit ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2'}`}>
-                {isSplit ? (
-                    <>
-                        <div className="col-span-1 md:col-span-2 font-bold text-gray-300">Left Side</div>
-                        <input type="number" placeholder="Weight (kg)" value={leftWeight} onChange={e => setLeftWeight(e.target.value)} className={inputClasses} />
-                        <input type="number" placeholder="Reps" value={leftReps} onChange={e => setLeftReps(e.target.value)} className={inputClasses} />
+            {isStrength && (
+                 <div className="flex items-center mb-4">
+                    <label className="flex items-center cursor-pointer">
+                        <div className="relative">
+                            <input type="checkbox" checked={isSplit} onChange={() => setIsSplit(!isSplit)} className="sr-only" />
+                            <div className={`block w-14 h-8 rounded-full border-2 transition-colors ${isSplit ? 'bg-gradient-to-r from-red-500 to-orange-500 border-transparent' : 'bg-gray-700 border-gray-600'}`}></div>
+                            <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${isSplit ? 'translate-x-full' : ''}`}></div>
+                        </div>
+                        <div className="ml-3 text-white font-semibold">Unilateral (Left/Right)</div>
+                    </label>
+                </div>
+            )}
+            
+            <div className="grid gap-4 mb-4 grid-cols-2">
+                {isStrength ? (
+                    isSplit ? (
+                        <>
+                            <div className="col-span-2 font-bold text-gray-300">Left Side</div>
+                            <input type="number" placeholder="Weight (kg)" value={leftWeight} onChange={e => setLeftWeight(e.target.value)} className={inputClasses} />
+                            <input type="number" placeholder="Reps" value={leftReps} onChange={e => setLeftReps(e.target.value)} className={inputClasses} />
 
-                        <div className="col-span-1 md:col-span-2 font-bold text-gray-300 mt-2">Right Side</div>
-                        <input type="number" placeholder="Weight (kg)" value={rightWeight} onChange={e => setRightWeight(e.target.value)} className={inputClasses} />
-                        <input type="number" placeholder="Reps" value={rightReps} onChange={e => setRightReps(e.target.value)} className={inputClasses} />
-                    </>
+                            <div className="col-span-2 font-bold text-gray-300 mt-2">Right Side</div>
+                            <input type="number" placeholder="Weight (kg)" value={rightWeight} onChange={e => setRightWeight(e.target.value)} className={inputClasses} />
+                            <input type="number" placeholder="Reps" value={rightReps} onChange={e => setRightReps(e.target.value)} className={inputClasses} />
+                        </>
+                    ) : (
+                        <>
+                            <input type="number" placeholder="Weight (kg)" value={weight} onChange={e => setWeight(e.target.value)} className={inputClasses} />
+                            <input type="number" placeholder="Reps" value={reps} onChange={e => setReps(e.target.value)} className={inputClasses} />
+                        </>
+                    )
                 ) : (
                     <>
-                        <input type="number" placeholder="Weight (kg)" value={weight} onChange={e => setWeight(e.target.value)} className={inputClasses} />
-                        <input type="number" placeholder="Reps" value={reps} onChange={e => setReps(e.target.value)} className={inputClasses} />
+                        <input type="number" placeholder="Duration (min)" value={duration} onChange={e => setDuration(e.target.value)} className={inputClasses} />
+                        <input type="number" placeholder="Distance (km)" value={distance} onChange={e => setDistance(e.target.value)} className={inputClasses} />
                     </>
                 )}
             </div>
@@ -128,7 +154,13 @@ const WorkoutLogger: React.FC<WorkoutLoggerProps> = ({ equipment, userId, onSess
                     <ul className="space-y-2">
                         {sets.map((set, index) => (
                             <li key={set.id} className="bg-gray-800/50 p-3 rounded-lg flex justify-between items-center">
-                                <span className="font-semibold">Set {index + 1}: {set.side ? `${set.side} - ` : ''}{set.weight} kg x {set.reps} reps</span>
+                                <span className="font-semibold">
+                                    Set {index + 1}: {set.side ? `${set.side} - ` : ''}
+                                    {set.weight !== undefined && set.reps !== undefined
+                                        ? `${set.weight} kg x ${set.reps} reps`
+                                        : `${set.duration} min - ${set.distance} km`
+                                    }
+                                </span>
                                 <button onClick={() => handleRemoveSet(set.id)} className="text-gray-500 hover:text-white text-xs font-bold uppercase">X</button>
                             </li>
                         ))}

@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import type { Equipment } from '../types';
+import type { Equipment, Category } from '../types';
 
 interface AddEquipmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (equipment: Omit<Equipment, 'id'>) => void;
+  categories: Category[];
+  initialCategoryId?: string;
 }
 
-const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, onSave }) => {
+const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, onSave, categories, initialCategoryId }) => {
   const [name, setName] = useState('');
   const [imageUrl, setImageUrl] = useState('https://source.unsplash.com/600x400/?gym-equipment-placeholder');
   const [info, setInfo] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
+  const [type, setType] = useState<'strength' | 'cardio'>('strength');
+  const [categoryId, setCategoryId] = useState(initialCategoryId || '');
 
   useEffect(() => {
     if (isOpen) {
@@ -21,15 +25,18 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, 
         setImageUrl('https://source.unsplash.com/600x400/?gym-equipment-placeholder');
         setInfo('');
         setVideoUrl('');
+        setType('strength');
+        setCategoryId(initialCategoryId || (categories.length > 0 ? categories[0].id : ''));
     }
-  }, [isOpen]);
+  }, [isOpen, initialCategoryId, categories]);
 
   const handleSave = () => {
-    if (!name.trim()) {
-        alert("Machine name is required.");
+    if (!name.trim() || !categoryId) {
+        alert("Machine name and category are required.");
         return;
     }
-    onSave({ name, imageUrl, info, videoUrl });
+    const categoryName = categories.find(c => c.id === categoryId)?.name || '';
+    onSave({ name, imageUrl, info, videoUrl, type, categoryId, categoryName });
   };
   
   const inputClasses = "bg-gray-800/50 p-3 rounded-md w-full border border-white/10 focus:border-red-500 focus:ring-red-500 transition-colors";
@@ -38,16 +45,43 @@ const AddEquipmentModal: React.FC<AddEquipmentModalProps> = ({ isOpen, onClose, 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add New Machine">
       <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="add-name" className={labelClasses}>Machine Name</label>
+              <input
+                id="add-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputClasses}
+                placeholder="e.g., Cable Crossover Machine"
+              />
+            </div>
+             <div>
+                <label htmlFor="add-type" className={labelClasses}>Equipment Type</label>
+                <select
+                    id="add-type"
+                    value={type}
+                    onChange={(e) => setType(e.target.value as 'strength' | 'cardio')}
+                    className={inputClasses}
+                >
+                    <option value="strength">Strength</option>
+                    <option value="cardio">Cardio</option>
+                </select>
+            </div>
+        </div>
+
         <div>
-          <label htmlFor="add-name" className={labelClasses}>Machine Name</label>
-          <input
-            id="add-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={inputClasses}
-            placeholder="e.g., Cable Crossover Machine"
-          />
+            <label htmlFor="add-category" className={labelClasses}>Category</label>
+            <select
+                id="add-category"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className={inputClasses}
+            >
+                <option value="" disabled>Select a category</option>
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+            </select>
         </div>
         
         <div>

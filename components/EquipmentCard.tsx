@@ -3,13 +3,12 @@ import type { Equipment } from '../types';
 
 interface EquipmentCardProps {
   equipment: Equipment;
-  onSelect: (equipment: Equipment) => void;
   isAdmin: boolean;
   onEdit: (equipment: Equipment) => void;
   onDelete: () => void;
 }
 
-const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment, onSelect, isAdmin, onEdit, onDelete }) => {
+const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment, isAdmin, onEdit, onDelete }) => {
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit(equipment);
@@ -19,13 +18,17 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment, onSelect, isAd
     e.stopPropagation();
     onDelete();
   }
+  
+  const handleSelect = () => {
+    window.location.hash = `#/equipment/${equipment.id}`;
+  };
 
   return (
     <div 
       className="bg-gray-900/50 rounded-xl overflow-hidden shadow-lg transition-all duration-300 cursor-pointer group focus-within:ring-4 focus-within:ring-red-500/50 outline-none border border-gray-800 hover:border-transparent relative p-1"
-      onClick={() => onSelect(equipment)}
+      onClick={handleSelect}
       tabIndex={0}
-      onKeyPress={(e) => e.key === 'Enter' && onSelect(equipment)}
+      onKeyPress={(e) => e.key === 'Enter' && handleSelect()}
     >
         <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl -z-10"></div>
         <div className="bg-gray-900 rounded-lg h-full flex flex-col">

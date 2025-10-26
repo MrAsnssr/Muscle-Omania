@@ -11,7 +11,6 @@ interface WorkoutHistoryModalProps {
 const WorkoutHistoryModal: React.FC<WorkoutHistoryModalProps> = ({ isOpen, onClose, history }) => {
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    // FIX: Corrected typo from toLocaleDate'string' to toLocaleDateString
     const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return `${formattedDate} - ${formattedTime}`;
@@ -35,7 +34,12 @@ const WorkoutHistoryModal: React.FC<WorkoutHistoryModalProps> = ({ isOpen, onClo
                             {session.sets.map((set, index) => (
                                  <li key={index} className="flex justify-between p-2 rounded-md bg-gray-800/50 text-sm">
                                     <span className="font-semibold">Set {index + 1}{set.side ? ` (${set.side})` : ''}:</span>
-                                    <span>{set.weight} kg x {set.reps} reps</span>
+                                    <span>
+                                        {set.weight !== undefined && set.reps !== undefined
+                                            ? `${set.weight} kg x ${set.reps} reps`
+                                            : `${set.duration} min - ${set.distance} km`
+                                        }
+                                    </span>
                                  </li>
                             ))}
                         </ul>

@@ -1,29 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import type { Equipment } from '../types';
+import type { Equipment, Category } from '../types';
 
 interface EditEquipmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   equipment: Equipment;
   onSave: (equipment: Equipment) => void;
+  categories: Category[];
 }
 
-const EditEquipmentModal: React.FC<EditEquipmentModalProps> = ({ isOpen, onClose, equipment, onSave }) => {
+const EditEquipmentModal: React.FC<EditEquipmentModalProps> = ({ isOpen, onClose, equipment, onSave, categories }) => {
   const [name, setName] = useState(equipment.name);
   const [imageUrl, setImageUrl] = useState(equipment.imageUrl);
   const [info, setInfo] = useState(equipment.info || '');
   const [videoUrl, setVideoUrl] = useState(equipment.videoUrl || '');
+  const [type, setType] = useState<'strength' | 'cardio'>(equipment.type || 'strength');
+  const [categoryId, setCategoryId] = useState(equipment.categoryId);
 
   useEffect(() => {
     setName(equipment.name);
     setImageUrl(equipment.imageUrl);
     setInfo(equipment.info || '');
     setVideoUrl(equipment.videoUrl || '');
+    setType(equipment.type || 'strength');
+    setCategoryId(equipment.categoryId);
   }, [equipment]);
 
   const handleSave = () => {
-    onSave({ ...equipment, name, imageUrl, info, videoUrl });
+    const categoryName = categories.find(c => c.id === categoryId)?.name || equipment.categoryName;
+    onSave({ ...equipment, name, imageUrl, info, videoUrl, type, categoryId, categoryName });
   };
   
   const inputClasses = "bg-gray-800/50 p-3 rounded-md w-full border border-white/10 focus:border-red-500 focus:ring-red-500 transition-colors";
@@ -32,15 +38,41 @@ const EditEquipmentModal: React.FC<EditEquipmentModalProps> = ({ isOpen, onClose
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Edit ${equipment.name}`}>
       <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="edit-name" className={labelClasses}>Machine Name</label>
+              <input
+                id="edit-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputClasses}
+              />
+            </div>
+             <div>
+                <label htmlFor="edit-type" className={labelClasses}>Equipment Type</label>
+                <select
+                    id="edit-type"
+                    value={type}
+                    onChange={(e) => setType(e.target.value as 'strength' | 'cardio')}
+                    className={inputClasses}
+                >
+                    <option value="strength">Strength</option>
+                    <option value="cardio">Cardio</option>
+                </select>
+            </div>
+        </div>
+
         <div>
-          <label htmlFor="name" className={labelClasses}>Machine Name</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={inputClasses}
-          />
+            <label htmlFor="edit-category" className={labelClasses}>Category</label>
+            <select
+                id="edit-category"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className={inputClasses}
+            >
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+            </select>
         </div>
         
         <div>
